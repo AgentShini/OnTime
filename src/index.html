@@ -8,12 +8,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>Your Reminders</h1>
-        <p>To set a new reminder, send an email to reminders@yourdomain.com with the subject line "Reminder in X hours/days" (e.g., "Reminder in 2 hours").</p>
-        <ul id="reminderList">
-            <!-- Reminders will be populated here -->
-        </ul>
+        <h1>Email Reminder Service</h1>
+        <div id="loginStatus"></div>
+        <button id="loginButton" style="display:none;">Login with Google</button>
+        <div id="reminderSection" style="display:none;">
+            <h2>Your Reminders</h2>
+            <p>To set a new reminder, send an email to reminders@yourdomain.com with the subject line "Reminder in X hours/days" (e.g., "Reminder in 2 hours").</p>
+            <ul id="reminderList"></ul>
+        </div>
+        <div id="subscriptionSection" style="display:none;">
+            <h2>Subscription</h2>
+            <p>Current plan: <span id="currentPlan"></span></p>
+            <button id="upgradePlan">Upgrade to Pro</button>
+        </div>
     </div>
+    <script src="https://js.stripe.com/v3/"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

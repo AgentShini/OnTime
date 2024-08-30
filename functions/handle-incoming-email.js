@@ -7,6 +7,22 @@ const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MA
 
 exports.handler = async (event, context) => {
   // Parse the incoming email (this depends on how you're receiving emails)
+  
+  const { user } = JSON.parse(event.body);
+  if (!user) {
+    return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorized' }) };
+  }
+
+  // Check user's subscription status and usage
+  const userRef = await client.query(
+    q.Get(q.Match(q.Index('users_by_email'), user.email))
+  );
+  const { subscription, usageCount } = userRef.data;
+
+  if (subscription === 'free' && usageCount >= 5) {
+    return { statusCode: 403, body: JSON.stringify({ error: 'Usage limit reached' }) };
+  }
+
   const { from, subject, text } = JSON.parse(event.body);
 
   // Extract reminder time from subject (e.g., "Reminder in 2 hours")
@@ -39,6 +55,12 @@ exports.handler = async (event, context) => {
           }
         )
       );
+      // Update usage count
+await client.query(
+  q.Update(userRef.ref, {
+    data: { usageCount: usageCount + 1 }
+  })
+);
 
       return {
         statusCode: 200,
